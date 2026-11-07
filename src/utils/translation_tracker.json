@@ -1,0 +1,84 @@
+{
+  "project": "Finstock Broking",
+  "phase": 9,
+  "localeStatus": {
+    "en": {
+      "language": "English",
+      "native": "English",
+      "status": "APPROVED",
+      "coveragePercent": 100,
+      "needsHumanReview": false,
+      "verifiedBy": "Compliance & Product Team"
+    },
+    "hi": {
+      "language": "Hindi",
+      "native": "हिन्दी",
+      "status": "APPROVED",
+      "coveragePercent": 100,
+      "needsHumanReview": false,
+      "verifiedBy": "SEBI Compliance Team"
+    },
+    "mr": {
+      "language": "Marathi",
+      "native": "मराठी",
+      "status": "MACHINE_TRANSLATED",
+      "coveragePercent": 100,
+      "needsHumanReview": true,
+      "notes": "Generated machine translation pass. Awaiting certified regional translator signoff."
+    },
+    "gu": {
+      "language": "Gujarati",
+      "native": "ગુજરાતી",
+      "status": "MACHINE_TRANSLATED",
+      "coveragePercent": 100,
+      "needsHumanReview": true,
+      "notes": "Generated machine translation pass. Awaiting certified regional translator signoff."
+    },
+    "ta": {
+      "language": "Tamil",
+      "native": "தமிழ்",
+      "status": "MACHINE_TRANSLATED",
+      "coveragePercent": 100,
+      "needsHumanReview": true,
+      "notes": "Generated machine translation pass. Awaiting certified regional translator signoff."
+    },
+    "te": {
+      "language": "Telugu",
+      "native": "తెలుగు",
+      "status": "MACHINE_TRANSLATED",
+      "coveragePercent": 100,
+      "needsHumanReview": true,
+      "notes": "Generated machine translation pass. Awaiting certified regional translator signoff."
+    },
+    "kn": {
+      "language": "Kannada",
+      "native": "ಕನ್ನಡ",
+      "status": "MACHINE_TRANSLATED",
+      "coveragePercent": 100,
+      "needsHumanReview": true,
+      "notes": "Generated machine translation pass. Awaiting certified regional translator signoff."
+    },
+    "bn": {
+      "language": "Bengali",
+      "native": "বাংলা",
+      "status": "MACHINE_TRANSLATED",
+      "coveragePercent": 100,
+      "needsHumanReview": true,
+      "notes": "Generated machine translation pass. Awaiting certified regional translator signoff."
+    }
+  },
+  "bannedWordsLint": {
+    "bannedList": [
+      "guaranteed",
+      "assured returns",
+      "100% safe",
+      "risk-free",
+      "earn money fast",
+      "free money",
+      "limited time hurry",
+      "best fund",
+      "top pick"
+    ],
+    "status": "PASSED"
+  }
+}

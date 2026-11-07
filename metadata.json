@@ -1,0 +1,6 @@
+{
+  "name": "Finstock Broking",
+  "description": "Indian stock broking app: Profile Hub, Reports Centre, Brokerage Calculator, Customer Support & Live Chat, Settings, DPDP Privacy and Admin Back-Office.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

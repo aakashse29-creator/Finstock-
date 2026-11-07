@@ -1,0 +1,77 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Finstock Broking registered investor account profile and KYC details",
+      "type": "object",
+      "properties": {
+        "ucc": { "type": "string", "description": "Unique Client Code assigned by SEBI broker" },
+        "fullName": { "type": "string", "description": "Legal full name as per PAN" },
+        "email": { "type": "string", "format": "email", "description": "Registered email" },
+        "mobile": { "type": "string", "description": "Registered mobile number" },
+        "pan": { "type": "string", "description": "Permanent Account Number" },
+        "accountStatus": { "type": "string", "enum": ["ACTIVE", "DORMANT", "FROZEN", "SUSPENDED"] },
+        "dematStatus": { "type": "string", "enum": ["ACTIVE", "SUSPENDED"] },
+        "kycStatus": { "type": "string", "enum": ["VERIFIED", "UNDER_REVIEW", "REJECTED"] },
+        "dpId": { "type": "string", "description": "CDSL DP ID" },
+        "boId": { "type": "string", "description": "Beneficiary Owner ID" },
+        "activeSegments": { "type": "array", "description": "Active trading segments" },
+        "availableFunds": { "type": "number", "description": "Available trading cash in INR" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ucc", "fullName", "email", "accountStatus", "dematStatus", "kycStatus"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Stock and commodity trading order record",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "description": "Unique order identifier" },
+        "userId": { "type": "string", "description": "Client user ID" },
+        "symbol": { "type": "string", "description": "Trading scrip or contract symbol" },
+        "exchange": { "type": "string", "enum": ["NSE", "BSE", "MCX"] },
+        "side": { "type": "string", "enum": ["BUY", "SELL"] },
+        "product": { "type": "string", "enum": ["CNC", "MIS", "NRML"] },
+        "orderType": { "type": "string", "enum": ["MARKET", "LIMIT", "SL", "GTT"] },
+        "quantity": { "type": "number", "description": "Order quantity" },
+        "price": { "type": "number", "description": "Order price" },
+        "triggerPrice": { "type": "number", "description": "Trigger price for SL or GTT" },
+        "status": { "type": "string", "enum": ["OPEN", "TRIGGER_PENDING", "FILLED", "CANCELLED", "REJECTED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "userId", "symbol", "exchange", "side", "product", "orderType", "quantity", "price", "status"]
+    },
+    "LedgerEntry": {
+      "title": "LedgerEntry",
+      "description": "Double-entry client ledger entry record",
+      "type": "object",
+      "properties": {
+        "entryId": { "type": "string", "description": "Unique voucher entry ID" },
+        "userId": { "type": "string", "description": "Client user ID" },
+        "date": { "type": "string", "description": "Entry settlement date" },
+        "narration": { "type": "string", "description": "Voucher transaction narration" },
+        "voucherType": { "type": "string", "enum": ["TRADE", "PAYIN", "PAYOUT", "CHARGES", "DIVIDEND", "DP_CHARGES"] },
+        "referenceId": { "type": "string", "description": "Payment or Contract Note ref ID" },
+        "debit": { "type": "number", "description": "Debit amount in INR" },
+        "credit": { "type": "number", "description": "Credit amount in INR" },
+        "runningBalance": { "type": "number", "description": "Post-transaction balance in INR" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["entryId", "userId", "date", "narration", "voucherType", "referenceId", "runningBalance"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile and KYC state stored securely per client"
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": "Order",
+      "description": "User stock and commodity trading orders"
+    },
+    "/users/{userId}/ledger/{entryId}": {
+      "schema": "LedgerEntry",
+      "description": "Double-entry financial ledger records for customer account"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened ID helper
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Entity Validation Helpers
+    function isValidUserProfile(data) {
+      return data.ucc is string && data.ucc.size() <= 32 &&
+             data.fullName is string && data.fullName.size() <= 100 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.accountStatus in ['ACTIVE', 'DORMANT', 'FROZEN', 'SUSPENDED'] &&
+             data.dematStatus in ['ACTIVE', 'SUSPENDED'] &&
+             data.kycStatus in ['VERIFIED', 'UNDER_REVIEW', 'REJECTED'];
+    }
+
+    function isValidOrder(data, userId) {
+      return data.orderId is string && data.orderId.size() <= 64 &&
+             data.userId == userId &&
+             data.symbol is string && data.symbol.size() <= 64 &&
+             data.exchange in ['NSE', 'BSE', 'MCX'] &&
+             data.side in ['BUY', 'SELL'] &&
+             data.product in ['CNC', 'MIS', 'NRML'] &&
+             data.orderType in ['MARKET', 'LIMIT', 'SL', 'GTT'] &&
+             data.quantity is number && data.quantity > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.status in ['OPEN', 'TRIGGER_PENDING', 'FILLED', 'CANCELLED', 'REJECTED'];
+    }
+
+    function isValidLedgerEntry(data, userId) {
+      return data.entryId is string && data.entryId.size() <= 64 &&
+             data.userId == userId &&
+             data.voucherType in ['TRADE', 'PAYIN', 'PAYOUT', 'CHARGES', 'DIVIDEND', 'DP_CHARGES'] &&
+             data.runningBalance is number;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false; // PII protection: no blanket user listing
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming());
+      allow update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming()) &&
+                       incoming().ucc == existing().ucc; // UCC is immutable
+
+      // Orders Subcollection
+      match /orders/{orderId} {
+        allow get: if isOwner(userId) && isValidId(orderId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(orderId) && isValidOrder(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(orderId) && isValidOrder(incoming(), userId) &&
+                         incoming().orderId == existing().orderId &&
+                         incoming().userId == existing().userId;
+        allow delete: if false; // Audit retention: orders cannot be purged
+      }
+
+      // Ledger Subcollection
+      match /ledger/{entryId} {
+        allow get: if isOwner(userId) && isValidId(entryId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(entryId) && isValidLedgerEntry(incoming(), userId);
+        allow update: if false; // Financial ledger immutability
+        allow delete: if false; // Financial ledger immutability
+      }
+    }
+  }
+}
